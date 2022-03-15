@@ -130,13 +130,8 @@ df2 <- df1 %>%
   pivot_longer(cols = date_of_birth:date_of_death, names_to = "date")
 #
 df2$name <-  gsub("[^a-zA-Z]", " ", df2$name)
-#
-ggplot(df2,aes(value,reorder(name,-number), group = number))+
-  geom_line()+
-  geom_point()+
-   geom_text(aes(x= df4$value_predykcja_daty_start_output, label = value))+
-  geom_text(aes(x= df4$value_predykcja_daty_koniec_output, label = value))+
-  theme_minimal()
+
+
 
 df3 <-  df2 %>%
   left_join(df2[seq(from = 1, to = 124,by = 2),] %>%
@@ -145,13 +140,14 @@ df3 <-  df2 %>%
 df4 <- df3 %>%
   full_join(df2[seq(from = 2, to = 124,by = 2),] %>% 
               mutate(value_predykcja_daty_koniec_output = value+1800))
+#
+#
+ggplot(df2,aes(value,reorder(name,-number), group = number))+
+  geom_line()+
+  geom_point(col = "grey40")+
+  geom_text(aes(x= df4$value_predykcja_daty_start_output, label = value))+
+  geom_text(aes(x= df4$value_predykcja_daty_koniec_output, label = value))+
+  theme_minimal()+xlab("")+ylab("")+ggtitle("27 Club on the timeline")+
+  scale_x_date(date_breaks = "10 year", date_labels = "%Y")+
+  theme(title = element_text(size=20))
 
-
-inner_join()
-df2[seq(from = 1, to = 124,by = 2),] %>%
-  mutate(value_predykcja_daty_start_output = value-1500)
-df2[seq(from = 2, to = 124,by = 2),] %>%
-  mutate(value_predykcja_daty_koniec_output = value+1500)
-
-
-df1 %>% filter(name == "Alexandre Levy")
