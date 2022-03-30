@@ -1,7 +1,7 @@
 library(tidyverse)
 library(lubridate)
 library(rvest)
-library(DataEditR)
+df1 %>% filter(official_cause_of_death =="Traffic collision") %>% select(name)
 
 #pobieranie danych
 link <- "https://en.wikipedia.org/wiki/27_Club"
@@ -143,11 +143,142 @@ df4 <- df3 %>%
 #
 #
 ggplot(df2,aes(value,reorder(name,-number), group = number))+
-  geom_line()+
-  geom_point(col = "grey40")+
+  geom_line(size = 1,col = "grey40")+
+  geom_point(col = "grey80",size = 2)+
   geom_text(aes(x= df4$value_predykcja_daty_start_output, label = value))+
   geom_text(aes(x= df4$value_predykcja_daty_koniec_output, label = value))+
   theme_minimal()+xlab("")+ylab("")+ggtitle("27 Club on the timeline")+
-  scale_x_date(date_breaks = "10 year", date_labels = "%Y")+
-  theme(title = element_text(size=20))
+  scale_x_date(date_breaks = "50 year", date_labels = "%Y")+
+  theme(title = element_text(size=20),
+        axis.text.x = element_text(face = "bold"),
+        axis.text.y = element_text(face = "bold"))
+
+
+ggsave("timeline.png", dpi=300)
+ggsa
+df1 %>% filter(official_cause_of_death == "Drug overdose") %>% select(name)
+#
+ggplot(df2,aes(value,reorder(name,-number), group = number))+
+  geom_line(size = 1,col = "grey40")+
+  geom_point(col = "grey80",size = 2)+
+  geom_text(aes(x= df4$value_predykcja_daty_start_output, label = value))+
+  geom_text(aes(x= df4$value_predykcja_daty_koniec_output, label = value))+
+  theme_minimal()+xlab("")+ylab("")+ggtitle("27 Club on the timeline")+
+  scale_x_date(date_breaks = "50 year", date_labels = "%Y")+
+  theme(title = element_text(size=20),
+        axis.text.x = element_text(face = "bold"),
+        axis.text.y = element_text(face = "bold"))
+  
+df5
+
+library(gghighlight)
+
+df5 <- df4 %>% select(-value_predykcja_daty_start_output, -value_predykcja_daty_koniec_output)
+
+
+
+
+
+
+gghighlight
+wczesniejsi <- c("Alexandre Levy", "Louis Chauvin", "Rupert Brooke",
+                 "Nat Jaffe", "Robert Johnson")    
+  #
+!is.na(df5$value_predykcja_daty_koniec_output)
+df5 <- df4
+df4 <-  df4 %>% mutate(wspolny = ifelse(is.na(df5$value_predykcja_daty_start_output),
+                                df5$value_predykcja_daty_koniec_output,
+                                df5$value_predykcja_daty_start_output) )
+df5$wspolny <-  if_else(is.na(df5$value_predykcja_daty_start_output), df5$value_predykcja_daty_koniec_output,
+df5$value_predykcja_daty_start_output)
+df5 <- df5 %>% select(-value_predykcja_daty_start_output,-value_predykcja_daty_koniec_output)
+df5
+#
+ ggplot(df5,aes(value,reorder(name,-number), group = number))+
+  geom_line(size = 1,col = "grey40")+
+  geom_point(col = "grey80",size = 2)+
+  geom_text(aes(x= wspolny, label = value))+
+  geom_text(aes(x= wspolny, label = value))+
+  theme_minimal()+xlab("")+ylab("")+ggtitle("27 Club on the timeline")+
+  scale_x_date(date_breaks = "50 year", date_labels = "%Y")+
+  theme(title = element_text(size=20),
+        axis.text.x = element_text(face = "bold"),
+        axis.text.y = element_text(color = rev(os_x_parametry_kolor),face = rev(os_x_parametry_pogrubienie)))+
+  gghighlight(name %in% wczesniejsi,use_group_by = F,
+              label_key = F)
+
+ library(gghighlight)
+os_x_parametry_kolor <- if_else(u %in% wczesniejsi,"black","grey60")
+
+os_x_parametry_pogrubienie <-  if_else(u %in% wczesniejsi,"bold","plain")
+
+
+print(p)
+##chi kwadrat
+df1
+link1 <- "https://pl.wikipedia.org/wiki/Klub_27"
+df001 <- read_html(link1) %>%
+  html_nodes(xpath= '//*[@id="mw-content-text"]/div[1]/table[1]') %>%
+  html_table()
+
+
+df001[[1]] %>% janitor::clean_names() %>% select(imie_i_nazwisko, znany_jako) %>% view() 
+wczesniejsi
+  
+v
+u <- df1$name %>% sort()
+u %in% wczesniejsi
+df1 %>% select(name) %>% arrange(name)
+df1 <- df1 %>% mutate(sex = "m")
+df1 %>% select(name,sex) %>% arrange(name)
+df1$official_cause_of_death <- as.factor(df1$official_cause_of_death)
+df1$sex <- as.factor(df1$sex)
+#
+df1[order(df1$name),][c(5,11,27,37,39,42,43,45),][,7] <- "f"
+
+a <- df1 %>% select(official_cause_of_death,sex)
+b <- chisq.test(table(matrix(a)))
+b$statistic
+b[1:3] %>% as_tibble()
+c <- a %>% mutate(sex = if_else(sex == "m","male","female"))
+c$sex <- as.factor(c$sex)
+c %>% group_by(sex) %>% summarise('total count of' = n())
+
+corrplot::corrplot(b$residuals, is.cor = FALSE)
+#nie ma zależności
+#
+library(tidyverse)
+library(DataEditR)
+library(DataExplorer)
+data_edit(mtcars,code = T)
+st <- storms
+st %>% glimpse()
+st %>% as_tibble()
+create_report(st)
+#summarise if
+st %>% summarise_if(is.numeric,max,na.rm = T)
+#summarise_at
+st %>% summarise_at(vars(wind,pressure),funs(mean,max,sd,n()))
+#summarise_all
+st %>% group_by(year) %>%  summarise_all(max)
+#lub nowsza funkcja across
+st %>% summarise(across(where(is.numeric),max,na.rm = T))
+st %>% summarise(across(c(wind,pressure),funs(mean,max,sd,n())))
+st %>% group_by(year) %>%
+  summarise(across(where(is.double),.fns = list(mean = mean,max = max),
+                   .names = "{.fn}_{.col}"))
+
+
+ooo <- c(NA,NA,NA,5,12,13,NA)
+ooo %>% mean(na.rm = T)
+
+#Find all rows where no variable has missing values:
+#
+st %>% filter(across(everything(), ~ !is.na(.x)))
+st %>% filter(complete.cases(.))
+st %>% drop_na()
+#
+df <- data.frame(replicate(60, sample(0:20000, 15 * 10^5, rep = TRUE)),
+                 replicate(60, stringi::stri_rand_strings(1000, 5)))
+write_csv(df,"d.csv")
 
